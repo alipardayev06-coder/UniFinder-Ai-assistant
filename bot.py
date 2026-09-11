@@ -35,7 +35,7 @@ last_messages = []        # Oxirgi xabarlar logi
 def get_user_chat(user_id: int):
     if user_id not in user_chats:
         model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",  # Eng tezkor va barqaror global model
+            model_name="gemini-3.5-flash",  # Mana shu yerga sening 3.5-flash modeling qo'yildi uka!
             system_instruction=SYSTEM_PROMPT
         )
         user_chats[user_id] = model.start_chat(history=[])
@@ -125,7 +125,7 @@ async def handle_main_logic(message: types.Message):
 
     try:
         chat_session = get_user_chat(user_id)
-        # Tezkor asinxron zanjir orqali javob olish (Blokirovkasiz)
+        # Tezkor asinxron zanjir orqali javob olish
         loop = asyncio.get_event_loop()
         response = await loop.run_in_executor(None, chat_session.send_message, text)
         
