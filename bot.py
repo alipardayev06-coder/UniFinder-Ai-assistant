@@ -6,37 +6,32 @@ from aiogram.filters import CommandStart, Command
 from aiogram.fsm.storage.memory import MemoryStorage
 import google.generativeai as genai
 
-# Loglarni sozlash (Serverda bot ishini kuzatish uchun)
+# Loglarni sozlash
 logging.basicConfig(level=logging.INFO)
 
-# Server muhitidan maxfiy kalitlarni olish
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_KEY = os.getenv("GEMINI_KEY")
 
-# MAXFIY KALIT SO'Z (Buni o'zingiz xohlagan so'zga o'zgartirishingiz mumkin)
 SECRET_ADMIN_KEY = "Alibek_Boss"
 
-# Google Gemini AI modelini sozlash
+# GOOGLE AI TIZIMINI YANGI MODELGA YO'NALTIRAMIZ
 genai.configure(api_key=GEMINI_KEY)
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-2.5-flash",  # Eng so'nggi va xatosiz ishlaydigan model nomi
     system_instruction=(
         "Siz O'zbekistondagi o'quvchilarga xalqaro va mahalliy universitetlarni topishda "
         "yordam beradigan professional, samimiy va tajribali AI Akademik Maslahatchisiz. "
         "Foydalanuvchilar (o'quvchilar) sizga o'z qiziqishlari, IELTS/Topik ballari, GPA (baho), "
         "moliyaviy holati (grant yoki kontrakt xohishi) va o'qimoqchi bo'lgan davlatlarini aytishadi. "
         "Siz har bir talabaga individual yondashib, unga mos keladigan TOP-3 ta universitet, "
-        "ularning talablari va mavjud grant dasturlari haqida aniq va tushunarli ma'lumot berasiz. "
-        "Har doim o'quvchini ruhan qo'llab-quvvatlang va unga motivatsiya bering."
+        "ularning talablari va grant dasturlari haqida aniq ma'lumot berasiz."
     )
 )
 
-# Aiogram 3.x uchun asosiy obyektlar
 bot = Bot(token=TELEGRAM_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
-# Suhbat tarixini foydalanuvchi IDsi bo'yicha saqlash uchun lug'at
 chat_sessions = {}
 
 @dp.message(CommandStart())
@@ -52,7 +47,7 @@ async def cmd_start(message: types.Message):
         "• Qiziqqan yo'nalishingiz (IT, Biznes, Tibbiyot...)\n"
         "• Til sertifikatlaringiz (IELTS, CEFR, TOPIK...)\n"
         "• Qaysi davlat yoki qit'ada o'qishni reja qilyapsiz?\n\n"
-        "O'z qiziqishlaringizni erkin yozing, men sizga eng zo'r variantlarni tahlil qilib beraman!"
+        "Erkin yozing, men sizga eng zo'r variantlarni tahlil qilib beraman!"
     )
     await message.reply(welcome_text)
 
@@ -67,18 +62,15 @@ async def handle_ai_message(message: types.Message):
     user_id = message.from_user.id
     user_text = message.text
 
-    # 🔑 MAXFIY KALIT SO'Z TEKSHIRUVI (Sizni tanib olish funksiyasi)
     if user_text == SECRET_ADMIN_KEY:
         admin_welcome = (
             f"👑 Salom, Alibek! Tizim sizni muvaffaqiyatli tanidi.\n\n"
             f"Siz ushbu AI botning asoschisi va loyiha rahbarisiz. "
-            f"Hozirda serverlar ideal holatda ishlamoqda, AI modeli (Gemini 1.5 Flash) aloqada. "
-            f"Omad tilayman, Boss!"
+            f"Tizimlar to'liq yangilandi va ideal holatda ishlamoqda, Boss!"
         )
         await message.reply(admin_welcome)
-        return  # AI ga yubormasdan jarayonni shu yerda to'xtatamiz
+        return
 
-    # Agar oddiy foydalanuvchi yozsa, AI ishga tushadi
     if user_id not in chat_sessions:
         chat_sessions[user_id] = model.start_chat(history=[])
 
@@ -89,15 +81,16 @@ async def handle_ai_message(message: types.Message):
         response = chat.send_message(user_text)
         await message.reply(response.text, parse_mode="Markdown")
     except Exception as e:
-        logging.error(f"Xatolik yuz berdi: {e}")
+        logging.error(f"Xatolik: {e}")
         await message.reply(
-            "Kechirasiz, hozirda so'rovlar soni ko'payganligi sababli tizimda biroz uzilish bo'ldi. "
+            "Kechirasiz, hozirda Google tizimida yangilanish bo'lmoqda. "
             "Iltimos, bir necha soniyadan so'ng qayta urinib ko'ring."
         )
 
 async def main():
-    logging.info("Bot muvaffaqiyatli ishga tushmoqda...")
-    await dp.start_polling(bot)
+    logging.info("Bot ishga tushmoqda...")
+    # skip_updates=True orqali boyagi eski serverdagi ziddiyatli xabarlarni tozalab tashlaymiz
+    await dp.start_polling(bot, skip_updates=True)
 
 if __name__ == '__main__':
     try:
