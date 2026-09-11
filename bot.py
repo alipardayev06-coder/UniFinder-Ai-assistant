@@ -274,10 +274,10 @@ async def handle_main_logic(message: types.Message, state: FSMContext):
     except Exception as e:
         logging.error(f"AI Xatoligi: {e}")
         await message.answer("Kechirasiz, so'rovingizni qayta ishlashda xatolik bo'ldi. Iltimos, qaytadan yozib ko'ring.")
-
 async def main():
     print("Super-Elite AI Bot muvaffaqiyatli ishga tushdi!")
     await dp.start_polling(bot)
 
-if name == "main":
+if __name__ == "__main__":
     asyncio.run(main())
+
