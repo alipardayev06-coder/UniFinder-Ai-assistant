@@ -17,7 +17,7 @@ SECRET_ADMIN_KEY = "Alibek_Boss"
 # GOOGLE AI TIZIMINI YANGI MODELGA YO'NALTIRAMIZ
 genai.configure(api_key=GEMINI_KEY)
 model = genai.GenerativeModel(
-    model_name="gemini-2.5-flash",  # Eng so'nggi va xatosiz ishlaydigan model nomi
+    model_name="gemini-3.6-flash",  # Eng so'nggi va xatosiz ishlaydigan model nomi
     system_instruction=(
         "Siz O'zbekistondagi o'quvchilarga xalqaro va mahalliy universitetlarni topishda "
         "yordam beradigan professional, samimiy va tajribali AI Akademik Maslahatchisiz. "
