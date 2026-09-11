@@ -264,7 +264,7 @@ async def handle_main_logic(message: types.Message, state: FSMContext):
     cursor.execute("INSERT INTO diagnostic_data (user_id, user_input) VALUES (?, ?)", (user_id, text))
     conn.commit()
 
-last_messages.append(f"👤 {user_name} ({user_id}): {text}")
+    last_messages.append(f"👤 {user_name} ({user_id}): {text}")
     await bot.send_chat_action(chat_id=message.chat.id, action="typing")
     try:
         chat_session = get_user_chat(user_id)
