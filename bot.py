@@ -6,12 +6,14 @@ from aiogram.filters import CommandStart, Command
 from aiogram.enums import ParseMode
 import google.generativeai as genai
 
+# Tizim loglarini sozlash
 logging.basicConfig(level=logging.INFO)
 
-# Tokenlarni Render'dan oladi
+# Tokenlarni Render serveridan olish
 BOT_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
+# Eng so'nggi yangilangan Gemini API sozlamasi
 genai.configure(api_key=GEMINI_API_KEY)
 
 SYSTEM_PROMPT = (
@@ -29,8 +31,9 @@ user_chats = {}
 
 def get_user_chat(user_id: int):
     if user_id not in user_chats:
+        # Eng yangi va bepul 'gemini-2.5-flash' modelidan foydalanamiz
         model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
+            model_name="gemini-2.5-flash",
             system_instruction=SYSTEM_PROMPT
         )
         user_chats[user_id] = model.start_chat(history=[])
