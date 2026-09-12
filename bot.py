@@ -16,6 +16,7 @@ logging.basicConfig(level=logging.INFO)
 BOT_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
+
 genai.configure(api_key=GEMINI_API_KEY)
 
 # Universitetlar uchun bosqichma-bosqich diagnostika prompti
